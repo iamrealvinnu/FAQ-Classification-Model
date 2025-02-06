@@ -41,18 +41,18 @@ This project implements a machine learning model using ML.NET to classify Freque
    ```sh
    dotnet run --project src/Program.cs
 
-📊 Data
+### 📊 Data
 The dataset file faq_dataset.csv contains FAQs and their respective categories. Ensure that the file is placed in the appropriate directory for successful execution.
 
-Evaluation
+### Evaluation
 The model's performance is evaluated using metrics such as log-loss and macro accuracy.
 
-Usage
+### Usage
 The trained model can classify new questions into predefined categories.
 
-🤝 Contributing
+### 🤝 Contributing
 Contributions are welcome! Feel free to fork the repository and submit a pull request with your improvements.
 
-📄 License
+### 📄 License
 This project is licensed under the MIT License. See the LICENSE file for details.
    
