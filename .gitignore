@@ -1,4 +1,14 @@
-   # Ignore Visual Studio temporary files
-   .vs/
-   bin/
-   obj/
+# Ignore Visual Studio temporary files
+.vs/
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
