@@ -1,76 +1,92 @@
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
-namespace faQClassification
+namespace FAQClassification
 {
+    public class FAQ
+    {
+        [LoadColumn(0)]
+        public string? Question { get; set; }
+
+        [LoadColumn(1)]
+        public string? Category { get; set; }
+    }
+
+    public static class TextPreprocessing
+    {
+        public static string PreprocessText(string? text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+
+            text = text.ToLower();
+            text = Regex.Replace(text, @"[^\w\s]", "");
+            return text.Trim();
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            try
+            var mlContext = new MLContext();
+
+            // Path to the dataset file
+            string dataPath = @"D:\FAQGDI\faQ\faQClassification\faq_dataset.csv";
+
+            // Load data from the file
+            var dataView = mlContext.Data.LoadFromTextFile<FAQ>(
+                path: dataPath,
+                separatorChar: ',',
+                hasHeader: true);
+
+            // Preprocess and clean up data
+            var faqData = mlContext.Data.CreateEnumerable<FAQ>(dataView, reuseRowObject: false);
+            var processedFAQs = new List<FAQ>();
+
+            foreach (var faq in faqData)
             {
-                // Create MLContext
-                var context = new MLContext();
-
-                // Load the data
-                var dataPath = @"D:\FAQGDI\faQ\faQClassification\bin\Debug\net8.0\faq_dataset.csv";
-                var data = context.Data.LoadFromTextFile<FAQ>(
-                    dataPath,
-                    separatorChar: ',',
-                    hasHeader: true);
-
-                // Split the data into training and test sets
-                var trainTestSplit = context.Data.TrainTestSplit(data, testFraction: 0.2);
-
-                // Define the training pipeline
-                var pipeline = context.Transforms.Conversion.MapValueToKey("Label", "Category")
-                    .Append(context.Transforms.Text.FeaturizeText("Features", "Question"))
-                    .Append(context.MulticlassClassification.Trainers.SdcaMaximumEntropy("Label", "Features"))
-                    .Append(context.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
-
-                // Train the model
-                var model = pipeline.Fit(trainTestSplit.TrainSet);
-
-                // Make predictions
-                var predictions = model.Transform(trainTestSplit.TestSet);
-
-                // Evaluate the model
-                var metrics = context.MulticlassClassification.Evaluate(predictions);
-
-                // Output the results
-                Console.WriteLine($"Macro Accuracy: {metrics.MacroAccuracy}");
-                Console.WriteLine($"Log-loss: {metrics.LogLoss}");
-                Console.WriteLine($"Micro Accuracy: {metrics.MicroAccuracy}");
-
-                // Display the confusion matrix
-                Console.WriteLine("Confusion Matrix:");
-                foreach (var row in metrics.ConfusionMatrix.Counts)
+                if (!string.IsNullOrWhiteSpace(faq.Question) && !string.IsNullOrWhiteSpace(faq.Category))
                 {
-                    foreach (var value in row)
+                    processedFAQs.Add(new FAQ
                     {
-                        Console.Write($"{value} ");
-                    }
-                    Console.WriteLine();
+                        Question = TextPreprocessing.PreprocessText(faq.Question),
+                        Category = faq.Category
+                    });
                 }
-
-                // Keep the console window open
-                Console.ReadLine();
             }
-            catch (Exception ex)
+
+            var processedDataView = mlContext.Data.LoadFromEnumerable(processedFAQs);
+
+            // Split data
+            var splitData = mlContext.Data.TrainTestSplit(processedDataView, testFraction: 0.2);
+
+            // Pipeline for data processing and training
+            var pipeline = mlContext.Transforms.Conversion.MapValueToKey("Label", "Category")
+                .Append(mlContext.Transforms.Text.FeaturizeText("Features", "Question"))
+                .Append(mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy("Label", "Features"))
+                .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+            var model = pipeline.Fit(splitData.TrainSet);
+
+            // Evaluate model
+            var predictions = model.Transform(splitData.TestSet);
+            var metrics = mlContext.MulticlassClassification.Evaluate(predictions);
+
+            Console.WriteLine($"Macro Accuracy: {metrics.MacroAccuracy:F2}");
+            Console.WriteLine($"Micro Accuracy: {metrics.MicroAccuracy:F2}");
+            Console.WriteLine($"Log Loss: {metrics.LogLoss:F2}");
+
+            // Display confusion table
+            Console.WriteLine("\nPer-Class Log Loss:");
+            for (int i = 0; i < metrics.PerClassLogLoss.Count; i++)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                Console.WriteLine($"Class {i}: {metrics.PerClassLogLoss[i]:F2}");
             }
-        }
 
-        // Class to define data schema
-        public class FAQ
-        {
-            [LoadColumn(0)]
-            public string Question { get; set; } = string.Empty;
-
-            [LoadColumn(1)]
-            public string Category { get; set; } = string.Empty;
+            Console.ReadLine();
         }
     }
 }
