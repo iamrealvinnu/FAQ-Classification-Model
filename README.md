@@ -1,31 +1,30 @@
 # FAQ Classification Model
 
-This project implements a machine learning model using ML.NET to classify Frequently Asked Questions (FAQs) into predefined categories. It utilizes the Stochastic Dual Coordinate Ascent (SDCA) algorithm for multi-class classification with key evaluation metrics such as macro accuracy and log-loss.
-
+This project implements a machine learning model using ML.NET to classify Frequently Asked Questions (FAQs) into predefined categories. It utilizes the Stochastic Dual Coordinate Ascent (SDCA) algorithm for efficient and accurate classification.
 
 ## 📂 Project Structure
 
-📁 DataAugmentation.cs       # Data enhancement and transformation  
-📁 MyModel.cs                # Model structure for FAQ classification  
-📁 Program.cs                # Main execution file  
-📁 faq_dataset.csv           # Dataset for training and testing  
-📁 faQClassification.sln     # Visual Studio solution file  
-📁 faQClassification.csproj  # Project definition  
-📄 LICENSE                   # License information  
-📄 README.md                 # Project documentation  
+- **DataAugmentation.cs**: Data enhancement and transformation.
+- **MyModel.cs**: Model structure for FAQ classification.
+- **Program.cs**: Main execution file.
+- **faq_dataset.csv**: Dataset for training and testing.
+- **faQClassification.sln**: Visual Studio solution file.
+- **faQClassification.csproj**: Project definition.
+- **LICENSE**: License information.
+- **README.md**: Project documentation.
 
 ## 🚀 Features
 
-- Multiclass FAQ classification using SDCA algorithm
-- Text preprocessing and data augmentation
-- Evaluation with macro accuracy and log-loss metrics
+- Multiclass FAQ classification using SDCA algorithm.
+- Text preprocessing and data augmentation.
+- Evaluation with macro accuracy and log-loss metrics.
 
 ## Getting Started
 
 ### Prerequisites
 
-.NET SDK: Install the latest version of the .NET SDK from Microsoft's official site.
-ML.NET: Integrated into the project for machine learning operations.
+- **.NET SDK**: Install the latest version of the .NET SDK from [Microsoft's official site](https://dotnet.microsoft.com/download).
+- **ML.NET**: Integrated into the project for machine learning operations.
 
 ### 🛠️ Setup
 
@@ -35,21 +34,25 @@ ML.NET: Integrated into the project for machine learning operations.
    cd FAQ-Classification-Model
    
 2. Build the project:
+   ```sh
    dotnet build
 
 3. Run the project:
+   ```sh
    dotnet run --project src/Program.cs
 
-### 📊 Data
+📊 Data
 The dataset file faq_dataset.csv contains FAQs and their respective categories. Ensure that the file is placed in the appropriate directory for successful execution.
 
-### Evaluation
-The model's performance is evaluated using metrics such as log-loss.
+Evaluation
+The model's performance is evaluated using metrics such as log-loss and macro accuracy.
 
-### Usage
+Usage
 The trained model can classify new questions into predefined categories.
 
-### Contributing
+🤝 Contributing
 Contributions are welcome! Feel free to fork the repository and submit a pull request with your improvements.
 
-
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for details.
+   
